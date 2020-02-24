@@ -1,0 +1,216 @@
+Dim v_Cli(10, 3) As String
+Dim v_Prod(10, 3) As String
+Dim v_Venda(10, 5) As String
+Dim c_Cli, c_Prod, c_Venda As Integer
+
+Private Sub CommandButton1_Click()
+    Dim menu As String
+    Dim opcao As Integer
+    
+    opcao = 0
+    
+    menu = " Sistema de Clientes / Vendas" & Chr(13)
+    menu = menu + "1 - Cadastrar Clientes" & Chr(13)
+    menu = menu + "2 - Cadastrar  Produtos" & Chr(13)
+    menu = menu + "3 - Cadastrar vendas" & Chr(13)
+    menu = menu + "4 - Lançamento de entregas" & Chr(13)
+    menu = menu + "5 - Exibir entregas" & Chr(13)
+    menu = menu + "6 - Sair" & Chr(13)
+    
+    
+    Do
+        
+        opcao = CInt(InputBox(menu + "Digite a opção desejada:", "Menu de opções"))
+        
+        Select Case opcao
+            Case 1
+                cadClientes
+                
+            Case 2
+                cadProdutos
+                          
+            Case 3
+                cadVendas
+            
+            Case 4
+                lanEnt
+                
+            Case 5
+                exiEnt
+                
+            Case 6
+                If MsgBox("Deseja sair?", vbOKCancel) = vbOK Then
+                    opcao = 7
+                End If
+                
+        End Select
+      Loop While opcao < 7
+    
+                
+    
+End Sub
+
+Private Sub cadClientes()
+    MsgBox "Cadastro de clientes."
+    Dim i As Integer
+    Dim rtn As Boolean
+    i = 1
+    rtn = True
+    Do
+        If Cells(i + 2, 1).Value = vbNullString Then
+            For j = 1 To 3 Step 1
+            
+                Select Case j
+                Case 1
+                    v_Cli(i, j) = i
+                Case 2
+                    v_Cli(i, j) = InputBox("Digite o nome do cliente:", "Cadastro de clientes")
+                Case 3
+                    v_Cli(i, j) = InputBox("Digite o endereço do cliente:", "Cadastro de clientes")
+                End Select
+            Next j
+            carregar_Cli (i + 2)
+            MsgBox "Cadastro realizado com sucesso!"
+            If MsgBox("Deseja cadastrar mais um cliente?", vbOKCancel, "Cadastro de clientes") = vbCancel Then
+                rtn = False
+            End If
+        End If
+        i = i + 1
+    Loop While rtn <> False
+End Sub
+
+
+Private Sub cadProdutos()
+    MsgBox "Cadastro de produtos."
+    Dim i As Integer
+    Dim rtn As Boolean
+    i = 1
+    rtn = True
+    Do
+        If Cells(i + 2, 5).Value = vbNullString Then
+            For j = 1 To 3 Step 1
+            
+                Select Case j
+                Case 1
+                    v_Prod(i, j) = i
+                Case 2
+                    v_Prod(i, j) = InputBox("Digite o nome do produto:", "Cadastro de produtos")
+                Case 3
+                    v_Prod(i, j) = InputBox("Digite o valor do produto:", "Cadastro de produtos")
+                End Select
+            Next j
+            MsgBox "Cadastro realizado com sucesso!"
+            carregar_Prod (i + 2)
+            If MsgBox("Deseja cadastrar mais um produto?", vbOKCancel, "Cadastro de produtos") = vbCancel Then
+                rtn = False
+            End If
+        End If
+        
+        i = i + 1
+    Loop While rtn <> False
+    
+End Sub
+
+
+Private Sub cadVendas()
+    MsgBox "Cadastro de vendas."
+    Dim i, n As Integer
+    Dim rtn As Boolean
+    i = 1
+    rtn = True
+    Do
+        If Cells(i + 2, 9).Value = vbNullString Then
+            For j = 1 To 5 Step 1
+            
+                Select Case j
+                Case 1
+                    v_Venda(i, j) = i
+                Case 2
+                    v_Venda(i, j) = InputBox("Digite o codigo do produto:", "Cadastro de vendas")
+                Case 3
+                    v_Venda(i, j) = InputBox("Digite o codigo do cliente:", "Cadastro de vendas")
+                Case 4
+                    v_Venda(i, j) = InputBox("Digite a quantidade do produto:", "Cadastro de vendas")
+                Case 5
+                    v_Venda(i, j) = "Pendente"
+                End Select
+            Next j
+             MsgBox "Cadastro realizado com sucesso!"
+            carregar_Venda (i + 2)
+            If MsgBox("Deseja cadastrar mais uma venda?", vbOKCancel, "Cadastro de vendas") = vbCancel Then
+                rtn = False
+            End If
+        End If
+        i = i + 1
+    Loop While rtn <> False
+End Sub
+
+
+Private Sub lanEnt()
+    Dim msg As String
+    Dim att As Integer
+    
+    msg = "Vendas não entregues: " & Chr(13)
+    For i = 1 To 10 Step 1
+        If Cells(i + 2, 9).Value = vbNullString Then
+        Else
+            If Cells(i + 2, 13).Value = "Pendente" Then
+                msg = msg & Chr(13) & "Cod_Venda  Cod_Prod  Cod_Cli               Status" & Chr(13)
+                For j = 1 To 3 Step 1
+                    msg = msg + "               " & Cells(i + 2, j + 8)
+                Next j
+                msg = msg + "               " + "Pendente"
+            End If
+            msg = msg & Chr(13)
+        End If
+    Next i
+    msg = msg & Chr(13) & "Digite o codigo da venda que foi entregue: "
+    att = InputBox(msg, "Atualização de entrega")
+    atu_entrega (att)
+    MsgBox "Venda entregue!"
+End Sub
+
+Private Sub exiEnt()
+    Dim msg As String
+    msg = "Vendas entregues: " & Chr(13)
+    For i = 1 To 10 Step 1
+        If Cells(i + 2, 9).Value = vbNullString Then
+        Else
+            If Cells(i + 2, 13).Value = "Entregue" Then
+                msg = msg & Chr(13) & "Cod_Venda  Cod_Prod  Cod_Cli               Status" & Chr(13)
+                For j = 1 To 3 Step 1
+                    msg = msg + "               " & Cells(i + 2, j + 8)
+                Next j
+                msg = msg + "               " + "Entregue"
+            End If
+            msg = msg & Chr(13)
+        End If
+    Next i
+    msg = msg & Chr(13)
+    MsgBox msg
+End Sub
+Private Sub atu_entrega(cod_venda As Integer)
+    Dim i As Integer
+    i = 3
+    While Cells(i, 9).Value <> vbNullString
+        If Cells(i, 9).Value = cod_venda Then
+            Cells(i, 13).Value = "Entregue"
+        End If
+        i = i + 1
+    Wend
+End Sub
+Private Sub carregar_Cli(i As Integer)
+        For j = 1 To 3
+            Cells(i, j).Value = v_Cli(i - 2, j)
+        Next j
+End Sub
+Private Sub carregar_Prod(i As Integer)
+        For j = 5 To 7
+            Cells(i, j).Value = v_Prod(i - 2, j - 4)
+        Next j
+End Sub
+Private Sub carregar_Venda(i As Integer)
+        For j = 9 To 13
+            Cells(i, j).Value = v_Venda(i - 2, j - 8)
+        Next j
+End Sub
